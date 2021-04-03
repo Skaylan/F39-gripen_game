@@ -14,6 +14,7 @@ background = pygame.image.load('images/background2.png')
 player_image = 'images/player.png'
 bullet_image = 'images/bullet.png'
 enemy_image = 'images/enemy.png'
+power_up_image1 = 'images/powerup01.png'
 
 pygame.mixer.init()
 power_up_sfx = mixer.Sound('sounds/power_up_sfx.wav')
@@ -29,7 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (pos_x, pos_y)
         self.speed = 7
         self.life = 5
-        self.upgrade = False
+        self.upgrade = 0
         self.wait = 300 #milisseconds
         self.last_shot = pygame.time.get_ticks()
         self.bullet_sfx = mixer.Sound('sounds/sound.wav')
@@ -77,7 +78,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (5*2, 5*2))
         self.rect = self.image.get_rect()
         self.rect.center = (pos_x, pos_y)
-        if player.upgrade == True:
+        if player.upgrade == 1:
             self.speed = 10
             player.wait = 200
         else:
@@ -113,6 +114,27 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.left = 0
 
 
+class Upgrade(pygame.sprite.Sprite):
+    def __init__(self, image_file, posx, posy):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image_file)
+        self.rect = self.image.get_rect()
+        self.rect.center = (posx, posy)
+        self.speed = 3
+    
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.bottom > HEIGHT:
+            self.kill()
+
+        
+        #MOVE LIMIT
+        if self.rect.right >= WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left <= 0:
+            self.rect.left = 0
+
+
 def main():
 
     pygame.init()
@@ -139,6 +161,15 @@ def main():
     enemy2 = Enemy(randint(0, WIDTH), 0)
     enemy_sprites.add(enemy)
 
+
+    #POWER UP SECTION
+    power_up_sprites = pygame.sprite.Group()
+    power_up_fast_bullets = Upgrade(power_up_image1, randint(0, WIDTH), 0)
+    power_up_sprites.add(power_up_fast_bullets)
+
+
+
+
     global enemy_hit_sfx
     global point
     point = 0
@@ -148,17 +179,24 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == K_g:
-            #         player.upgrade = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_g:
+                    player.upgrade = 0
                     
-            #     if event.key == K_f:
-            #         player.upgrade = True
-            #         power_up_sfx.play()
+                if event.key == K_f:
+                    player.upgrade = 1
+                    power_up_sfx.play()
                         
         #COLLISION SECTION
         sprite_hit = pygame.sprite.spritecollide(player, enemy_sprites, False)
-            
+        
+
+        power_up_hit = pygame.sprite.spritecollide(player, power_up_sprites, True, False)
+
+        for hit in power_up_hit:
+            player.upgrade = 1
+            power_up_sfx.play()
+
         
         for hit in sprite_hit:
             enemy_hit_sfx = mixer.Sound('sounds/enemy_hit_sfx.wav')
@@ -188,9 +226,13 @@ def main():
         enemy_sprites.draw(screen)
         enemy_sprites.update()
 
+        #DRAW POWER UPS
+        if point == 15:
+            power_up_sprites.draw(screen)
+            power_up_sprites.update()
+
         if player.life <= 0:
             game_over()
-
 
             
             
