@@ -118,6 +118,7 @@ class Upgrade(pygame.sprite.Sprite):
     def __init__(self, image_file, posx, posy):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(image_file)
+        self.image = pygame.transform.scale(self.image, (15*3, 15*3))
         self.rect = self.image.get_rect()
         self.rect.center = (posx, posy)
         self.speed = 3
