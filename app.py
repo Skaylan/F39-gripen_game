@@ -121,12 +121,13 @@ class Upgrade(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (posx, posy)
         self.speed = 3
-    
     def update(self):
         self.rect.y += self.speed
         if self.rect.bottom > HEIGHT:
             self.kill()
 
+        #TIMER
+        
         
         #MOVE LIMIT
         if self.rect.right >= WIDTH:
@@ -143,6 +144,8 @@ def main():
     fps = pygame.time.Clock()
     global myfont
     myfont = pygame.font.SysFont("monospace", 26)
+    timer = False
+    timer_count = 1000
 
 
     #PLAYER SECTION
@@ -158,7 +161,7 @@ def main():
     #ENEMIES SECTION
     enemy_sprites = pygame.sprite.Group()
     enemy = Enemy(randint(0, WIDTH), 0)
-    enemy2 = Enemy(randint(0, WIDTH), 0)
+    # enemy2 = Enemy(randint(0, WIDTH), 0)
     enemy_sprites.add(enemy)
 
 
@@ -191,11 +194,19 @@ def main():
         sprite_hit = pygame.sprite.spritecollide(player, enemy_sprites, False)
         
 
-        power_up_hit = pygame.sprite.spritecollide(player, power_up_sprites, True, False)
+        power_up_hit = pygame.sprite.groupcollide(player_sprites, power_up_sprites, False, True)
 
         for hit in power_up_hit:
             player.upgrade = 1
             power_up_sfx.play()
+            timer = True
+
+        if timer == True:
+            timer_count -= 1
+        if timer_count <= 0:
+            player.upgrade = 0
+            timer = False
+
 
         
         for hit in sprite_hit:
@@ -227,7 +238,7 @@ def main():
         enemy_sprites.update()
 
         #DRAW POWER UPS
-        if point == 15:
+        if point and point == 3 or 5:
             power_up_sprites.draw(screen)
             power_up_sprites.update()
 
