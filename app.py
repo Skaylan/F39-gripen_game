@@ -235,7 +235,7 @@ def main():
         enemy_sprites.update()
 
         #DRAW POWER UPS
-        if point >= 5:
+        if point >= 15:
             power_up_sprites.draw(screen)
             power_up_sprites.update()
 
