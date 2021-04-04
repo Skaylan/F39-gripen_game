@@ -125,9 +125,6 @@ class Upgrade(pygame.sprite.Sprite):
         self.rect.y += self.speed
         if self.rect.bottom > HEIGHT:
             self.kill()
-
-        #TIMER
-        
         
         #MOVE LIMIT
         if self.rect.right >= WIDTH:
@@ -238,7 +235,7 @@ def main():
         enemy_sprites.update()
 
         #DRAW POWER UPS
-        if point and point == 3 or 5:
+        if point >= 5:
             power_up_sprites.draw(screen)
             power_up_sprites.update()
 
