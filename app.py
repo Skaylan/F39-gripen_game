@@ -186,6 +186,7 @@ def main():
                     
                 if event.key == K_f:
                     player.upgrade = 1
+                    timer = True
                     power_up_sfx.play()
                         
         #COLLISION SECTION
@@ -204,6 +205,7 @@ def main():
         if timer_count <= 0:
             player.upgrade = 0
             timer = False
+            timer_count = 1000
 
 
         
